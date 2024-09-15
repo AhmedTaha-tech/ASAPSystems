@@ -1,0 +1,25 @@
+<div class="login-container">
+    <form class="k-form login-form">
+      <h2>Login</h2>
+      
+      <!-- Username Field -->
+      <div class="k-form-field">
+        <label class="k-label" for="username">Username</label>
+        <input kendoTextBox id="username" name="username" [(ngModel)]="username" placeholder="Enter your username" required />
+      </div>
+  
+      <!-- Password Field -->
+      <div class="k-form-field">
+        <label class="k-label" for="password">Password</label>
+        <input kendoTextBox type="password" id="password" name="password" [(ngModel)]="password" placeholder="Enter your password" required />
+      </div>
+  
+      <!-- Submit Button -->
+      <div class="k-form-field">
+        <button kendoButton (click)="onLogin()" [primary]="true" class="login-button">Login</button>
+      </div>
+  
+      <!-- Notification -->
+      <kendo-notification #notification></kendo-notification>
+    </form>
+  </div>

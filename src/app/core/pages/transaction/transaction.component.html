@@ -1,0 +1,151 @@
+<div class="k-form k-form-horizontal">
+    <form [formGroup]="searchForm" (ngSubmit)="onSearchForm()">
+  
+     <div class="k-form-field">
+        <label for="transactionTypes" class="k-label">Transaction Type</label>
+        <kendo-dropdownlist [data]="transactionTypes"
+                            formControlName="transactionType"
+                            [defaultItem]="'All Transaction Types'"
+                            [valuePrimitive]="true">
+        </kendo-dropdownlist>
+        </div>
+
+      <div class="k-form-field">
+        <label for="itemid" class="k-label">Item</label>
+        <kendo-dropdownlist [data]="itemData"
+                            textField="itemName"
+                            valueField="itemId"
+                            formControlName="itemId"
+                            [filterable]="true"
+                            [defaultItem]="{ itemId: null, itemName: 'All Items' }"
+                            placeholder="Select Item">
+        </kendo-dropdownlist>
+      </div>
+    
+      <div class="k-form-field">
+        <label for="transactionDateFrom" class="k-label">Transaction Date From</label>
+        <kendo-datepicker formControlName="transactionDateFrom" id="transactionDateFrom"></kendo-datepicker>
+      </div>
+  
+      <div class="k-form-field">
+        <label for="transactionDateTo" class="k-label">Transaction Date To</label>
+        <kendo-datepicker formControlName="transactionDateTo" id="transactionDateTo"></kendo-datepicker>
+      </div>
+  
+      <div class="k-form-buttons">
+        <button type="submit" class="k-button k-primary" [disabled]="searchForm.invalid">Search</button>
+        <button type="button" class="k-button" (click)="onReset()">Reset</button>
+      </div>
+    </form>
+  </div>
+
+<!-- <input [(ngModel)]="searchText" (input)="onSearch()" placeholder="Search..." />
+<kendo-datepicker [(ngModel)]="selectedDate" (valueChange)="onDateChange($event)"></kendo-datepicker> -->
+
+<button kendoButton (click)="openModal()" [themeColor]="'info'">Add Transaction</button>
+<kendo-grid [data]="filteredData">
+  <kendo-grid-column field="transactionId" title="Transaction Id"></kendo-grid-column>
+  <kendo-grid-column field="transactionType" title="Transaction Type"></kendo-grid-column>
+  <kendo-grid-column field="itemId" title="Item Id"></kendo-grid-column>
+  <kendo-grid-column field="itemName" title="Item Name"></kendo-grid-column>
+  <kendo-grid-column field="locationFrom" title="Location From"></kendo-grid-column>
+  <kendo-grid-column field="locationTo" title="Location To"></kendo-grid-column>
+  <kendo-grid-column field="transactionDate" title="Transaction Date"></kendo-grid-column>
+  <kendo-grid-command-column title="Actions">
+    <ng-template kendoGridCellTemplate let-dataItem>
+      <button kendoButton (click)="openModal(dataItem)" [themeColor]="'success'">Edit</button>
+      <button kendoButton (click)="openDeleteConfirmation(dataItem)" [themeColor]="'primary'">Delete</button>
+    </ng-template>
+  </kendo-grid-command-column>
+</kendo-grid>
+
+
+
+<!-- Delete Confirmation -->
+<kendo-dialog *ngIf="confirmDelete" title="Confirm Delete">
+    <p>Are you sure you want to delete this transaction?</p>
+    <kendo-dialog-actions>
+      <button kendoButton (click)="onDelete()">Yes</button>
+      <button kendoButton (click)="closeDialog()">No</button>
+    </kendo-dialog-actions>
+  </kendo-dialog>
+
+<!-- Kendo UI Dialog Modal -->
+<kendo-dialog
+  *ngIf="isModalOpen"
+  title="{{ selectedTransaction ? 'Update Transaction' : 'Add Transaction' }}"
+  [width]="600"
+  (close)="closeModal()">
+
+  <form [formGroup]="transactionForm" (ngSubmit)="onSave()">
+    <div class="k-form">
+        <div class="k-form-field">
+          <label for="transactionTypes" class="k-label">Transaction Type<span class="required">*</span></label>
+        <kendo-dropdownlist [data]="transactionTypes"
+                            formControlName="transactionType"
+                            [valuePrimitive]="true">
+        </kendo-dropdownlist>
+        <div *ngIf="transactionForm.get('transactionType')?.touched && transactionForm.get('transactionType')?.invalid" class="error-message">
+          Transaction type is required.
+        </div>
+        </div>
+
+      <div class="k-form-field">
+        <label for="itemId">Item <span class="required">*</span></label>
+        <kendo-dropdownlist
+          id="itemId"
+          formControlName="itemId"
+          [data]="itemData"
+          textField="itemName"
+          valueField="itemId"
+          [valuePrimitive]="false">
+        </kendo-dropdownlist>
+        <div *ngIf="transactionForm.get('itemId')?.touched && transactionForm.get('itemId')?.invalid" class="error-message">
+          Transaction type is required.
+        </div>
+      </div>
+
+      <div class="k-form-field">
+        <label for="locationFrom">Location From <span class="required">*</span></label>
+        <input
+          type="text"
+          id="locationFrom"
+          formControlName="locationFrom"
+          kendoTextBox
+          class="k-textbox">
+          <div *ngIf="transactionForm.get('locationFrom')?.touched && transactionForm.get('locationFrom')?.invalid" class="error-message">
+            Location From is required.
+          </div>
+      </div>
+
+      <div class="k-form-field">
+        <label for="locationTo">Location To <span class="required">*</span></label>
+        <input
+          type="text"
+          id="locationTo"
+          formControlName="locationTo"
+          kendoTextBox
+          class="k-textbox">
+          <div *ngIf="transactionForm.get('locationTo')?.touched && transactionForm.get('locationTo')?.invalid" class="error-message">
+            Location To is required.
+          </div>
+      </div>
+
+      <div class="k-form-field">
+        <label for="transactionDate">Transaction Date <span class="required">*</span></label>
+        <kendo-datepicker
+          id="transactionDate"
+          formControlName="transactionDate">
+        </kendo-datepicker>
+        <div *ngIf="transactionForm.get('transactionDate')?.touched && transactionForm.get('transactionDate')?.invalid" class="error-message">
+          Transaction Date is required.
+        </div>
+      </div>
+
+      <div class="k-form-buttons">
+        <button type="submit" kendoButton class="k-button k-primary" [themeColor]="'info'">Save</button>
+        <button type="button" kendoButton class="k-button" (click)="closeModal()" [themeColor]="'secondary'">Cancel</button>
+      </div>
+    </div>
+  </form>
+</kendo-dialog>
