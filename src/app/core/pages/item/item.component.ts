@@ -75,7 +75,7 @@ GetItemsList(){
  addItem(itemData: any): void {
    debugger;
    const newItem = {
-     itemId: itemData.itemId.itemId, itemName: itemData.itemName, quantity: itemData.quantity
+     itemId: itemData.itemId, itemName: itemData.itemName, quantity: itemData.quantity
      , location: itemData.location
    };
    this.gridData = [...this.gridData, newItem];
